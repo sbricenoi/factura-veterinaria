@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Facturación Veterinaria</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    <style>
+        .card {
+            margin-bottom: 20px;
+        }
+        .table-responsive {
+            margin-top: 20px;
+        }
+        .badge {
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <h1 class="text-center mb-4">Sistema de Facturación Veterinaria</h1>
+        
+        <div class="row">
+            <!-- Sección de Servicios -->
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">Gestión de Servicios</h4>
+                    </div>
+                    <div class="card-body">
+                        <form id="servicioForm">
+                            <div class="mb-3">
+                                <label for="nombreServicio" class="form-label">Nombre del Servicio</label>
+                                <input type="text" class="form-control" id="nombreServicio" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="costoServicio" class="form-label">Costo ($)</label>
+                                <input type="number" class="form-control" id="costoServicio" min="1" step="0.01" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Registrar Servicio</button>
+                        </form>
+                        
+                        <div class="table-responsive">
+                            <h5>Servicios Disponibles</h5>
+                            <table class="table table-striped table-hover" id="tablaServicios">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Nombre</th>
+                                        <th>Costo</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Datos de servicios -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sección de Facturas -->
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h4 class="mb-0">Gestión de Facturas</h4>
+                    </div>
+                    <div class="card-body">
+                        <form id="facturaForm">
+                            <div class="mb-3">
+                                <label class="form-label">Servicios a Incluir</label>
+                                <div id="listaServiciosFactura" class="border p-2 rounded">
+                                    <!-- Lista de servicios con checkboxes -->
+                                    <p class="text-muted" id="mensajeNoServicios">No hay servicios disponibles. Agregue servicios primero.</p>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-success">Generar Factura</button>
+                        </form>
+                        
+                        <hr>
+                        
+                        <h5>Consultar Factura</h5>
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control" id="facturaIdConsulta" placeholder="ID de Factura">
+                            <button class="btn btn-outline-secondary" type="button" id="btnConsultarFactura">Consultar</button>
+                        </div>
+                        
+                        <div class="table-responsive">
+                            <h5>Facturas Generadas</h5>
+                            <table class="table table-striped table-hover" id="tablaFacturas">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Total</th>
+                                        <th>Estado</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Datos de facturas -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Modal para Detalles de Factura -->
+        <div class="modal fade" id="detalleFacturaModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Detalle de Factura</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" id="detalleFacturaBody">
+                        <!-- Detalles de la factura -->
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html> 
