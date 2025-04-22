@@ -1,17 +1,28 @@
 package com.servicios.vet.model;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
 /**
  * Esta clase representa un servicio veterinario que puede ofrecerse a los clientes.
  * Es como una ficha que guarda la información de cada tipo de servicio disponible.
  */
+@Entity
+@Table(name = "SERVICIOS")
 public class Servicio {
     // Un código único para identificar cada servicio (como una cédula de identidad)
+    @Id
+    @Column(name = "SERVICIO_ID")
     private String id;
     
     // El nombre que describe el servicio (por ejemplo: "Vacunación", "Consulta", etc.)
+    @Column(name = "NOMBRE", nullable = false)
     private String nombre;
     
     // Cuánto cuesta este servicio (en la moneda local)
+    @Column(name = "COSTO", nullable = false)
     private double costo;
 
     /**

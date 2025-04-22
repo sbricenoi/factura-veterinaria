@@ -2,12 +2,14 @@ package com.servicios.vet.service;
 
 import com.servicios.vet.model.Factura;
 import com.servicios.vet.model.Servicio;
+import com.servicios.vet.repository.FacturaRepository;
+import com.servicios.vet.repository.ServicioRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -21,13 +23,14 @@ import java.util.UUID;
  */
 @Service
 public class FacturaService {
-    // Almacén en memoria para las facturas (como un archivador digital)
-    // Usa un mapa donde la "llave" es el ID de la factura y el "valor" es la factura misma
-    private Map<String, Factura> facturas = new HashMap<>();
-    
-    // Almacén en memoria para los servicios
-    // Funciona igual que el mapa de facturas
-    private Map<String, Servicio> servicios = new HashMap<>();
+    private final FacturaRepository facturaRepository;
+    private final ServicioRepository servicioRepository;
+
+    @Autowired
+    public FacturaService(FacturaRepository facturaRepository, ServicioRepository servicioRepository) {
+        this.facturaRepository = facturaRepository;
+        this.servicioRepository = servicioRepository;
+    }
 
     // ===== MÉTODOS PARA GESTIONAR SERVICIOS =====
     
@@ -58,8 +61,7 @@ public class FacturaService {
         }
         
         // Guardamos el servicio en el mapa usando su ID como llave
-        servicios.put(servicio.getId(), servicio);
-        return servicio;
+        return servicioRepository.save(servicio);
     }
 
     /**
@@ -70,11 +72,8 @@ public class FacturaService {
      * @throws IllegalArgumentException Si no existe un servicio con ese ID
      */
     public Servicio obtenerServicio(String id) {
-        Servicio servicio = servicios.get(id);
-        if (servicio == null) {
-            throw new IllegalArgumentException("No existe servicio con ID: " + id);
-        }
-        return servicio;
+        return servicioRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("No existe servicio con ID: " + id));
     }
 
     /**
@@ -83,21 +82,12 @@ public class FacturaService {
      * @return Lista de todos los servicios
      */
     public List<Servicio> listarServicios() {
-        return new ArrayList<>(servicios.values());
+        return servicioRepository.findAll();
     }
 
     // ===== MÉTODOS PARA GESTIONAR FACTURAS =====
     
-    /**
-     * Crea una nueva factura a partir de una lista de IDs de servicios.
-     * 
-     * Para cada ID en la lista, busca el servicio correspondiente y lo incluye
-     * en la factura. Genera un ID único para la factura y la guarda en el sistema.
-     * 
-     * @param serviciosIds Lista de IDs de los servicios a incluir
-     * @return La factura creada
-     * @throws IllegalArgumentException Si la lista está vacía o algún ID no existe
-     */
+    @Transactional
     public Factura crearFactura(List<String> serviciosIds) {
         // Verificamos que haya al menos un servicio
         if (serviciosIds == null || serviciosIds.isEmpty()) {
@@ -107,7 +97,8 @@ public class FacturaService {
         // Convertimos los IDs en objetos Servicio
         List<Servicio> serviciosFactura = new ArrayList<>();
         for (String id : serviciosIds) {
-            Servicio servicio = obtenerServicio(id);
+            Servicio servicio = servicioRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("No existe servicio con ID: " + id));
             serviciosFactura.add(servicio);
         }
 
@@ -117,37 +108,17 @@ public class FacturaService {
         // Creamos la factura con los servicios
         Factura nuevaFactura = new Factura(facturaId, serviciosFactura);
         
-        // Guardamos la factura en el mapa
-        facturas.put(facturaId, nuevaFactura);
-        
-        return nuevaFactura;
+        // Guardamos la factura en la base de datos
+        return facturaRepository.save(nuevaFactura);
     }
 
-    /**
-     * Busca y retorna una factura específica por su ID.
-     * 
-     * @param id El identificador único de la factura
-     * @return La factura encontrada
-     * @throws IllegalArgumentException Si no existe una factura con ese ID
-     */
+    @Transactional(readOnly = true)
     public Factura obtenerFactura(String id) {
-        Factura factura = facturas.get(id);
-        if (factura == null) {
-            throw new IllegalArgumentException("No existe factura con ID: " + id);
-        }
-        return factura;
+        return facturaRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("No existe factura con ID: " + id));
     }
 
-    /**
-     * Marca una factura como pagada.
-     * 
-     * Busca la factura por su ID y cambia su estado a "pagada".
-     * 
-     * @param id El identificador único de la factura
-     * @return La factura actualizada
-     * @throws IllegalArgumentException Si no existe una factura con ese ID
-     * @throws IllegalStateException Si la factura ya estaba pagada
-     */
+    @Transactional
     public Factura pagarFactura(String id) {
         Factura factura = obtenerFactura(id);
         
@@ -158,15 +129,11 @@ public class FacturaService {
         
         // Marcamos la factura como pagada
         factura.setPagada(true);
-        return factura;
+        return facturaRepository.save(factura);
     }
 
-    /**
-     * Obtiene la lista de todas las facturas registradas en el sistema.
-     * 
-     * @return Lista de todas las facturas
-     */
+    @Transactional(readOnly = true)
     public List<Factura> listarFacturas() {
-        return new ArrayList<>(facturas.values());
+        return facturaRepository.findAll();
     }
 } 
