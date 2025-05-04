@@ -1,0 +1,12 @@
+com/servicios/vet/repository/FacturaRepository.class
+com/servicios/vet/dto/ServicioDTO.class
+com/servicios/vet/service/ServicioService.class
+com/servicios/vet/config/WebConfig.class
+com/servicios/vet/dto/FacturaRequestDTO.class
+com/servicios/vet/repository/ServicioRepository.class
+com/servicios/vet/controller/FacturaController.class
+com/servicios/vet/model/Factura.class
+com/servicios/vet/config/DatabaseConfig.class
+com/servicios/vet/service/FacturaService.class
+com/servicios/vet/model/Servicio.class
+com/servicios/vet/VetApplication.class

@@ -1,0 +1,12 @@
+/Users/sbriceno/Documents/DUOC/project/vet/src/main/java/com/servicios/vet/VetApplication.java
+/Users/sbriceno/Documents/DUOC/project/vet/src/main/java/com/servicios/vet/config/DatabaseConfig.java
+/Users/sbriceno/Documents/DUOC/project/vet/src/main/java/com/servicios/vet/config/WebConfig.java
+/Users/sbriceno/Documents/DUOC/project/vet/src/main/java/com/servicios/vet/controller/FacturaController.java
+/Users/sbriceno/Documents/DUOC/project/vet/src/main/java/com/servicios/vet/dto/FacturaRequestDTO.java
+/Users/sbriceno/Documents/DUOC/project/vet/src/main/java/com/servicios/vet/dto/ServicioDTO.java
+/Users/sbriceno/Documents/DUOC/project/vet/src/main/java/com/servicios/vet/model/Factura.java
+/Users/sbriceno/Documents/DUOC/project/vet/src/main/java/com/servicios/vet/model/Servicio.java
+/Users/sbriceno/Documents/DUOC/project/vet/src/main/java/com/servicios/vet/repository/FacturaRepository.java
+/Users/sbriceno/Documents/DUOC/project/vet/src/main/java/com/servicios/vet/repository/ServicioRepository.java
+/Users/sbriceno/Documents/DUOC/project/vet/src/main/java/com/servicios/vet/service/FacturaService.java
+/Users/sbriceno/Documents/DUOC/project/vet/src/main/java/com/servicios/vet/service/ServicioService.java
