@@ -136,4 +136,18 @@ public class FacturaService {
     public List<Factura> listarFacturas() {
         return facturaRepository.findAll();
     }
+
+    @Transactional
+    public void eliminarFactura(String id) {
+        Factura factura = obtenerFactura(id);
+        System.out.println("Factura encontrada: " + factura);
+        // Verificamos que la factura no esté pagada
+        if (factura.isPagada()) {
+            throw new IllegalStateException("No se puede eliminar una factura ya pagada");
+        }
+        System.out.println("Factura eliminada: " + factura);
+        // Eliminamos la factura
+        facturaRepository.delete(factura);
+        System.out.println("Factura eliminada: " + factura);
+    }
 } 

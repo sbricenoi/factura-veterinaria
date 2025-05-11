@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.*;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
+import org.springframework.hateoas.Link;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -206,5 +208,32 @@ public class FacturaController {
             .collect(Collectors.toList());
         
         return new ResponseEntity<>(facturasModel, HttpStatus.OK);
+    }
+
+    /**
+     * Endpoint para eliminar una factura con soporte HATEOAS.
+     */
+    @DeleteMapping("/factura/{id}")
+    public ResponseEntity<?> eliminarFactura(@PathVariable String id) {
+        try {
+            facturaService.eliminarFactura(id);
+            
+            // Crear un link HATEOAS para listar facturas
+            //Link listarFacturasLink = linkTo(methodOn(FacturaController.class).listarFacturas()).withRel("facturas");
+            
+            // Devolver una respuesta sin contenido pero con un mensaje personalizado
+            return ResponseEntity.ok()
+                .header("X-Mensaje", "Factura eliminada exitosamente")
+                .body(Collections.singletonMap("mensaje", "Factura eliminada exitosamente"));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Collections.singletonMap("error", e.getMessage()));
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Collections.singletonMap("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Collections.singletonMap("error", "Error al procesar la solicitud: " + e.getMessage()));
+        }
     }
 } 
