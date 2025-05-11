@@ -251,17 +251,24 @@ function renderizarFacturas() {
         const row = document.createElement('tr');
         row.innerHTML = `
             <td>${factura.id}</td>
-            <td>$${factura.total.toFixed(2)}</td>
+            <td>$${calcularTotalFactura(factura.servicios).toFixed(2)}</td>
+            <td>${factura.pagada ? 'Pagada' : 'Pendiente'}</td>
             <td>
-                <span class="badge ${factura.pagada ? 'bg-success' : 'bg-warning'}">
-                    ${factura.pagada ? 'Pagada' : 'Pendiente'}
-                </span>
-            </td>
-            <td>
-                <button class="btn btn-sm btn-info me-1" onclick="verDetalleFactura('${factura.id}')">
-                    Ver
-                </button>
-                ${!factura.pagada ? `<button class="btn btn-sm btn-success" onclick="pagarFactura('${factura.id}')">Pagar</button>` : ''}
+                <div class="btn-group" role="group">
+                    <button class="btn btn-sm btn-info" onclick="verDetalleFactura('${factura.id}')">
+                        Ver
+                    </button>
+                    ${!factura.pagada ? `
+                    <button class="btn btn-sm btn-danger" onclick="eliminarFactura('${factura.id}')">
+                        Eliminar
+                    </button>
+                    ` : ''}
+                    ${!factura.pagada ? `
+                    <button class="btn btn-sm btn-success" onclick="pagarFactura('${factura.id}')">
+                        Pagar
+                    </button>
+                    ` : ''}
+                </div>
             </td>
         `;
         tablaFacturas.appendChild(row);
@@ -469,6 +476,55 @@ async function pagarFactura(id) {
     }
 }
 
+/**
+ * Elimina una factura específica previa confirmación.
+ * 
+ * @param {string} id - ID de la factura a eliminar
+ */
+async function eliminarFactura(id) {
+    try {
+        // Confirmar eliminación con SweetAlert
+        const resultado = await Swal.fire({
+            title: '¿Estás seguro?',
+            text: 'Esta acción no se puede deshacer. Solo se pueden eliminar facturas no pagadas.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        });
+
+        // Si el usuario cancela, salir
+        if (!resultado.isConfirmed) {
+            return;
+        }
+
+        // Enviar solicitud DELETE para eliminar la factura
+        const response = await fetch(`${FACTURA_URL}/${id}`, {
+            method: 'DELETE'
+        });
+
+        // Verificar si la solicitud fue exitosa
+        if (!response.ok) {
+            const errorData = await response.text();
+            throw new Error(errorData || 'Error al eliminar la factura');
+        }
+
+        // Obtener el encabezado de mensaje personalizado
+        const mensajeEliminacion = response.headers.get('X-Mensaje') || 'Factura eliminada exitosamente';
+
+        // Recargar la lista de facturas
+        await cargarFacturas();
+
+        // Mostrar mensaje de éxito
+        mostrarAlerta(mensajeEliminacion, 'success');
+    } catch (error) {
+        console.error('Error:', error);
+        mostrarAlerta(error.message, 'error');
+    }
+}
+
 // ===== FUNCIONES AUXILIARES =====
 
 /**
@@ -484,6 +540,16 @@ function mostrarAlerta(mensaje, tipo) {
         icon: tipo,
         confirmButtonText: 'Aceptar'
     });
+}
+
+/**
+ * Calcula el total de una factura sumando los costos de los servicios.
+ * 
+ * @param {Array} servicios - Lista de servicios en la factura
+ * @returns {number} Total de la factura
+ */
+function calcularTotalFactura(servicios) {
+    return servicios.reduce((total, servicio) => total + servicio.costo, 0);
 }
 
 // ===== INICIALIZACIÓN =====
